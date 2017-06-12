@@ -33,8 +33,10 @@ for i = 1:max_i % i: proposed optimal value
 end
 figure
 plot(1:max_i, SPM);
+title('2014ss-BCIPJ-Team2-calibrationVPrah');
 xlabel('number of events in a decision')
 ylabel('SPM')
+saveas(gcf,'calibrationVPrah_SPM.png')
 [max_SPM, optimal_fixed] = max(SPM)
 decision_per_second = decision_per_minute/60;
 decision_per_minute_optimal = decision_per_minute(optimal_fixed)
@@ -44,4 +46,6 @@ plot(1:max_i, decision_per_second)
 hold on;
 plot(1:max_i, effective_correctness)
 plot([optimal_fixed optimal_fixed], [0 1], 'r')
+title('2014ss-BCIPJ-Team2-calibrationVPrah');
+saveas(gcf,'calibrationVPrah_curves.png')
 legend('decision\_per\_second', 'effective\_correctness');
