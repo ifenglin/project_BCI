@@ -1,3 +1,4 @@
+clear
 %% set up data
 basename= '2014ss-BCIPJ-Team2-calibration';
 
@@ -52,7 +53,7 @@ for i = 1:max_i % i: proposed optimal value
             hits = desc_decoder(targets_desc);
             maxval = max(hits);
             maxidx = find( hits==maxval );
-            if size(maxidx, 1) == 1
+            if length(maxidx) == 1
                 number_correctness = number_correctness + 1; 
             else
                 number_correctness = number_correctness - 1; 
