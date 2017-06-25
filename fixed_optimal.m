@@ -50,9 +50,10 @@ for i = 1:max_i % i: proposed optimal value
         desc_in_section = mrk.event.desc(idx_section);
         if any(targets_in_section)
             targets_desc = desc_in_section(targets_in_section);
-            hits = desc_decoder(targets_desc);
-            maxval = max(hits);
-            maxidx = find( hits==maxval );
+            [outputs, counters] = desc_decoder(targets_desc);
+            accumulated_outputs = sum(outputs, 2);
+            maxval = max(accumulated_outputs);
+            maxidx = find( accumulated_outputs==maxval );
             if length(maxidx) == 1
                 number_correctness = number_correctness + 1; 
             else

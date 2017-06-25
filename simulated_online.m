@@ -1,4 +1,3 @@
-clear
 %% set up data
 
 % file paths
@@ -9,12 +8,12 @@ file = strcat('bci_demo_data\data\VPras_14_09_02\', basename, filename) ;
 % file = strcat('bci_demo_data\data\VPrah_14_07_14\', basename, filename) ;
 
 % methods
-method=@bci_t_test;
-method_name = 't_test';
-alpha = 0.025;
-% method=@bci_fixed;
-% method_name = 'fixed';
-% alpha = 20;
+% method=@bci_t_test;
+% method_name = 't-test';
+% alpha = 0.05;
+method=@bci_fixed;
+method_name = 'fixed';
+alpha = 50;
 
 hdr= file_readBVheader(file);
 % define low-pass filter
@@ -39,27 +38,27 @@ class_count = zeros(10,1);
 idx_start = 1;
 for i = 1:length(mrk.time) % time
     if prediction ~= 0
-        prediction = prediction; 
         class_count(prediction) = class_count(prediction) + 1;
         idx_start = i;
     end
     idx_section = idx_start:i;
     desc_in_section = mrk.event.desc(idx_section);
-    [~, outputs] = desc_decoder(desc_in_section);
-    %prediction = bci_t_test(outputs, alpha);
-    %prediction = bci_fixed(outputs);
-    prediction = method(outputs, alpha);
+    output_in_section = mrk.y(idx_section);
+    [outputs, counters, istim] = desc_decoder(desc_in_section);
+    fprintf('[%2d] -> %d, %d\n',  mrk.event.desc(i), istim);
+    disp(counters')
+    prediction = method(outputs, counters, alpha);
     prediction_hist(i) = prediction;
 end
 plot(1:length(mrk.time), prediction_hist, '*');
 ylim([1, 10])
-title(strcat('Predictions through Time ', filename, ' ', method_name));
+title(strcat(filename, ' Predictions through Time ', method_name, ' w/alpha=', num2str(alpha)));
 xlabel('time [ms]')
 ylabel('prediction')
-saveas(gcf, strcat('prediction_through_time_', filename, '_', method_name, '.png'));
+saveas(gcf, strcat(filename, '_prediction_through_time_', '_', method_name, '.png'));
 figure
 bar(class_count)
-title(strcat('Number of prediction by class ', filename, ' ', method_name));
+title(strcat(filename, ' Number of prediction by class ', method_name, ' w/alpha=', num2str(alpha)));
 xlabel('Class')
 ylabel('Number of prediction')
-saveas(gcf, strcat('prediction_by_class_', filename, '_', method_name, '.png'));
+saveas(gcf, strcat(filename, '_prediction_by_class_', '_', method_name, '.png'));
