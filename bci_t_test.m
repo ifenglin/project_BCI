@@ -1,19 +1,25 @@
-function [ prediction ] = bci_t_test( Data, alpha )
+function [ prediction ] = bci_t_test( outputs, counters, alpha )
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
-   stop = false;
-   pval = zeros(size(Data, 1), 1);
-   for i = 1:size(Data, 1)
-       other_idx = 1:size(Data, 1);
-       other_idx(1) = [];
-       Ds = Data(i,:); % Selected class 
-       Do = Data(other_idx, :); % Other classes
-       [~, pval(i)] = ttest2(Ds(:), Do(:));
-       if pval(i) < alpha
-           stop = true;
+   pval = zeros(length(counters), 1);
+   accumulated_outputs = sum(outputs, 2);
+   for i = 1:length(counters)
+       if isempty(find(accumulated_outputs, 1))
+           continue
        end
+       % Selected data samples
+       Ds = zeros(counters(i), 1);
+       Ds(1:accumulated_outputs(i)) = 1;
+       
+       % Other data samples
+       other_idx = 1:length(counters);
+       other_idx(i) = [];
+       Do = zeros(sum(counters(other_idx)), 1);
+       Do(1:sum(accumulated_outputs(other_idx))) = 1; 
+       
+       [~, pval(i)] = ttest2(Ds(:), Do(:));
    end
-   if stop
+   if find(pval < alpha)
        [minval, prediction] = min(pval);
        if length(find(pval == minval)) > 1 % more than one class have the same p-val
            prediction = 0;

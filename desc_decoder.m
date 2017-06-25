@@ -1,9 +1,16 @@
-function [ accumulated_outputs, outputs ] = desc_decoder( descs )
+function [ outputs, counters, istim ] = desc_decoder( descs )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
-outputs = zeros(10, size(descs, 1));
+outputs = zeros(10, length(descs));
+counters = zeros(10, 1);
 for i = 1:size(descs, 1)
-    desc = descs(i)-60;
+    if descs(i) > 60
+        target = true;
+        desc = descs(i) - 60;
+    else
+        target = false;
+        desc = 1+mod(descs(i)-1, 25);
+    end
     if desc>=1 && desc <=5
        outputs(1, i) = 1;
     end
@@ -34,6 +41,11 @@ for i = 1:size(descs, 1)
     if desc == 15 || desc == 19 || desc == 22 || desc == 24 || desc == 25
        outputs(10, i) = 1;
     end
+    counters = counters + outputs(:, i);
+    if i == size(descs, 1)
+        istim = find(outputs(:,i));
+    end
+    if ~target
+        outputs(:,i) = 0;
+    end
 end
-accumulated_outputs = sum(outputs,2);
-
